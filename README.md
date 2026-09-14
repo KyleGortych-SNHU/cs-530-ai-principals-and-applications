@@ -38,7 +38,7 @@ Testing is done using main.yml as main entrypoint to run the diffrent project te
 
 ### Code Examples
 
-#### AndroidManifest to set entrypoint as LoginActivity.java
+#### src
 
 <details>
 <summary>Click to see</summary>
