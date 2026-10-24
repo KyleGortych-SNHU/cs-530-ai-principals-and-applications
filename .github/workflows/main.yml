@@ -1,0 +1,9 @@
+name: Main
+
+on:
+  workflow_dispatch:
+
+jobs:
+  module5:
+    name: Module 5
+    uses: ./.github/workflows/module5.yml
