@@ -1,7 +1,7 @@
 """
 test_game.py
 Unit tests for game entities, scoring, and terminal game states.
-Date: 10/24/2026
+Date: 10/25/2026
 Author: Kyle Gortych
 
 Module contract:
@@ -16,7 +16,7 @@ import unittest
 import pygame
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
-from entities import Collectible, Enemy, Player
+from entities import Collectible, Enemy, Platform, Player
 from game import Game
 
 
@@ -49,6 +49,46 @@ class EntityTests(unittest.TestCase):
 
         self.assertLess(player.rect.y, 100)
         self.assertFalse(player.on_ground)
+
+    def test_player_lands_on_platform(self) -> None:
+        """Downward movement stops at the top of a platform."""
+        player = Player(20, 55)
+        platform = Platform(0, 100, 150, 20)
+
+        player.update(0.05, {}, [platform], world_width=200)
+
+        self.assertEqual(player.rect.bottom, platform.rect.top)
+        self.assertTrue(player.on_ground)
+
+    def test_player_stays_inside_world_horizontal_bounds(self) -> None:
+        """Left and right input cannot move the player beyond the world."""
+        player = Player(0, 100)
+
+        player.update(0.05, {pygame.K_LEFT: True}, [], world_width=100)
+        self.assertEqual(player.rect.left, 0)
+
+        right_edge_player = Player(68, 100)
+        right_edge_player.update(0.05, {pygame.K_RIGHT: True}, [], world_width=100)
+        self.assertEqual(right_edge_player.rect.right, 100)
+
+    def test_player_rejects_world_narrower_than_player(self) -> None:
+        """An impossible world width is rejected before movement."""
+        player = Player(0, 100)
+
+        with self.assertRaises(ValueError):
+            player.update(0, {}, [], world_width=player.rect.width - 1)
+
+    def test_enemy_rejects_invalid_patrol_range(self) -> None:
+        """Enemy patrol bounds must contain its full width."""
+        with self.assertRaises(ValueError):
+            Enemy(0, 0, 0, Enemy.WIDTH - 1)
+
+    def test_platform_rejects_non_positive_dimensions(self) -> None:
+        """Platforms with zero or negative dimensions are rejected."""
+        for dimensions in ((0, 20), (20, 0), (-1, 20), (20, -1)):
+            with self.subTest(dimensions=dimensions):
+                with self.assertRaises(ValueError):
+                    Platform(0, 0, *dimensions)
 
 
 class GameTests(unittest.TestCase):
@@ -86,6 +126,35 @@ class GameTests(unittest.TestCase):
 
         self.assertEqual(self.game.state, "playing")
 
+    def test_enemy_collision_causes_loss(self) -> None:
+        """Contact with the enemy transitions the game to its lost state."""
+        self.game.enemy.rect.center = self.game.player.rect.center
+
+        self.game.update(0, {})
+
+        self.assertEqual(self.game.state, "lost")
+
+    def test_falling_below_screen_causes_loss(self) -> None:
+        """A player below the visible world transitions to the lost state."""
+        self.game.platforms = []
+
+        for _ in range(30):
+            self.game.update(0.05, {})
+            if self.game.state == "lost":
+                break
+
+        self.assertEqual(self.game.state, "lost")
+
+    def test_terminal_state_is_unchanged_by_later_updates(self) -> None:
+        """A lost state does not resume or change after another update."""
+        self.game.state = "lost"
+        previous_position = self.game.player.rect.copy()
+
+        self.game.update(0.05, {pygame.K_RIGHT: True})
+
+        self.assertEqual(self.game.state, "lost")
+        self.assertEqual(self.game.player.rect, previous_position)
+
     def test_draw_renders_to_in_memory_surface(self) -> None:
         """Drawing updates a Surface and does not require a display window."""
         target = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -93,6 +162,16 @@ class GameTests(unittest.TestCase):
         self.game.draw(target)
 
         self.assertEqual(target.get_size(), (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    def test_game_rejects_surface_that_is_too_small(self) -> None:
+        """Game initialization requires a minimum drawable screen size."""
+        with self.assertRaises(ValueError):
+            Game(pygame.Surface((100, 100)))
+
+    def test_draw_rejects_surface_that_is_too_small(self) -> None:
+        """Rendering rejects an undersized target Surface."""
+        with self.assertRaises(ValueError):
+            self.game.draw(pygame.Surface((100, 100)))
 
 
 if __name__ == "__main__":
