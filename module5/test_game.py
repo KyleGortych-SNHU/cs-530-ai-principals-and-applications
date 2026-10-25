@@ -15,7 +15,7 @@ import unittest
 
 import pygame
 
-from constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from constants import SCREEN_HEIGHT, SCREEN_WIDTH, WORLD_WIDTH
 from entities import Collectible, Enemy, Platform, Player
 from game import Game
 
@@ -128,7 +128,12 @@ class GameTests(unittest.TestCase):
 
     def test_enemy_collision_causes_loss(self) -> None:
         """Contact with the enemy transitions the game to its lost state."""
-        self.game.enemy.rect.center = self.game.player.rect.center
+        self.game.enemy = Enemy(
+            self.game.player.rect.x,
+            self.game.player.rect.y,
+            0,
+            WORLD_WIDTH,
+        )
 
         self.game.update(0, {})
 
