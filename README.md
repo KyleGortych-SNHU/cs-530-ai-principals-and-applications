@@ -79,48 +79,51 @@ classDiagram
     Game *-- Enemy : checks collisions
 ```
 
-### Code Examples
+#### Source Code
 
-#### src
+- [Game entry point](module5/main.py)
+- [Game state and rendering](module5/game.py)
+- [Player, platform, collectible, and enemy entities](module5/entities.py)
+- [Game constants](module5/constants.py)
+- [Python dependencies](module5/requirements.txt)
 
-<details>
-<summary>Click to see</summary>
+Run the game from the repository root:
 
-```python
-
-```
-</details>
-
-#### Unit Test
-
-<details>
-<summary>Click to see</summary>
-
-```python
-
+```bash
+python module5/main.py
 ```
 
-</details>
+#### Testing
 
-#### Integration Test
+Run the unit tests from the repository root:
 
-<details>
-<summary>Click to see</summary>
-
-```python
-
+```bash
+python -m pytest module5
 ```
 
-</details>
+The tests in [test_game.py](module5/test_game.py) cover player jumping, platform
+landing, world boundaries, entity validation, coin scoring, enemy collision,
+falling, win/loss states, and rendering to an in-memory Pygame surface. GitHub
+Actions runs this same test command on pushes to `main` and on manual dispatch.
 
-</details>
-
-### Screenshots of Application
+#### Screenshots
 
 <div align="center">
-  <img src="screenshots/screenshot_1.png" width="100%" alt="img">
+  <img src="module5/assets/Screenshot_20261025_161016.png" width="90%" alt="Coin Trail gameplay showing the player, platforms, a coin, and an enemy">
+  <p>Gameplay</p>
 </div>
 
 <div align="center">
-  <img src="screenshots/screenshot_2.png" width="100%" alt="img">
+  <img src="module5/assets/Screenshot_20261025_161030.png" width="90%" alt="Coin Trail game over screen after an enemy collision">
+  <p>Game over screen</p>
+</div>
+
+<div align="center">
+  <img src="module5/assets/Screenshot_20261025_161118.png" width="90%" alt="Terminal showing the original seven Module 5 tests passing">
+  <p>Initial test run</p>
+</div>
+
+<div align="center">
+  <img src="module5/assets/Screenshot_20261025_161905.png" width="90%" alt="Terminal showing all 17 Module 5 tests passing">
+  <p>Updated test run</p>
 </div>
