@@ -38,6 +38,47 @@ Testing is done using main.yml as main entrypoint to run the diffrent project te
 <details>
 <summary>Click to see</summary>
 
+#### UML Class Diagram
+
+```mermaid
+classDiagram
+    class Game {
+        -Player player
+        -list~Platform~ platforms
+        -list~Collectible~ collectibles
+        -Enemy enemy
+        -int goal_x
+        -str state
+        -int score
+        +update(delta_seconds, keys)
+        +draw(screen)
+    }
+    class Player {
+        -Rect rect
+        -float velocity_y
+        -bool on_ground
+        +update(delta_seconds, keys, platforms, world_width)
+    }
+    class Platform {
+        +Rect rect
+    }
+    class Collectible {
+        +Rect rect
+        +bool collected
+        +collect()
+    }
+    class Enemy {
+        +Rect rect
+        +float speed
+        +int direction
+        +update(delta_seconds)
+    }
+    Game *-- Player : controls
+    Game *-- Platform : level geometry
+    Game *-- Collectible : tracks score
+    Game *-- Enemy : checks collisions
+```
+
 ### Code Examples
 
 #### src
