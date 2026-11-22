@@ -6,6 +6,7 @@ from module9 import neural_network, payroll
 
 
 def test_xor_training_and_prediction_pipeline():
+    """Specification: XOR training trains and predicts four rows."""
     result = neural_network.train(seed=7, max_iterations=300)
     predictions = neural_network.forward(result.x, neural_network.XOR_INPUTS)
     loss = neural_network.mean_squared_error(
@@ -20,6 +21,7 @@ def test_xor_training_and_prediction_pipeline():
 
 
 def test_payroll_record_is_consistent_across_calculation():
+    """Specification: integration payroll totals remain consistent."""
     record = payroll.calculate_payroll("EMP-42", 40, 30.0, "IT")
 
     assert record["employee_id"] == "EMP-42"
@@ -28,6 +30,14 @@ def test_payroll_record_is_consistent_across_calculation():
 
 
 def test_synthetic_classifier_pipeline_runs_both_activations():
+    """Specification: generate data, calculate weights, and classify for both
+    sigmoid and step activations.
+
+    Precondition: synthetic features and targets are linearly separable.
+    Postcondition: both paths return binary-predictable weight and prediction
+    shapes.
+    Effect: no external state is mutated.
+    """
     data_set = neural_network.create_synthetic_data_set(
         sample_count=400,
         seed=23,
@@ -48,3 +58,4 @@ def test_synthetic_classifier_pipeline_runs_both_activations():
 
         assert weights.shape == (3,)
         assert predictions.shape == (400,)
+        assert set(predictions) <= {0.0, 1.0}

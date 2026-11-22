@@ -143,14 +143,14 @@ classDiagram
     class NeuralNetwork {
         +float[] XOR_INPUTS
         +float[] XOR_TARGETS
-        +single_neuron(inputs, weights, activation)
-        +create_synthetic_data_set(sample_count, seed)
-        +calculate_weights(data_set, activation)
-        +binary_classifier(data_set, weights, activation)
-        +sigmoid(values)
-        +forward(parameters, inputs)
-        +mean_squared_error(parameters, inputs, targets)
-        +gradient(parameters, inputs, targets)
+        +single_neuron(FloatArray inputs, FloatArray weights, str activation) float
+        +create_synthetic_data_set(int sample_count, int seed) tuple~FloatArray,FloatArray~
+        +calculate_weights(object data_set, str activation, float learning_rate, int max_iterations) FloatArray
+        +binary_classifier(object data_set, FloatArray weights, str activation) FloatArray
+        +sigmoid(FloatArray values) FloatArray
+        +forward(FloatArray parameters, FloatArray inputs) FloatArray
+        +mean_squared_error(FloatArray parameters, FloatArray inputs, FloatArray targets) float
+        +gradient(FloatArray parameters, FloatArray inputs, FloatArray targets) FloatArray
         +train(inputs, targets, seed, max_iterations) OptimizeResult
     }
     class PayrollRecord {
@@ -214,7 +214,11 @@ The tests cover neural-network sigmoid behavior, backpropagation gradients,
 repeatable training, XOR prediction integration, payroll validation, overtime,
 bonuses, taxes, rounding, and payroll record invariants. Additional unit and
 integration tests run the synthetic single-neuron and binary-classifier
-workflows for both `sigmoid` and `step` activation functions.
+workflows for both supported `sigmoid` and `step` activation functions. The
+classification tests calculate one set of weights with the sigmoid gradient
+and one set with the perceptron learning rule for the step activation, then
+run the binary classifier twice and verify that both prediction paths return
+binary values and achieve at least 95 percent accuracy on the synthetic data.
 
 GitHub Actions runs the Module 9 workflow with Python 3.12 and 3.13, checks
 PEP 8 style and formatting with Ruff, and executes the tests through

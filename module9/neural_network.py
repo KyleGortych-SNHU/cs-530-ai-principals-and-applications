@@ -29,7 +29,13 @@ XOR_TARGETS: Final = np.array(
 
 
 def _validate_activation(activation: str) -> str:
-    """Normalize and validate a supported activation name."""
+    """Normalize and validate a supported activation name.
+
+    Precondition: activation is a string naming sigmoid or step.
+    Postcondition: returns a normalized activation name; unsupported names
+    raise an exception.
+    Effect: no state is mutated.
+    """
     if not isinstance(activation, str):
         raise TypeError("activation must be a string")
     normalized = activation.strip().lower()
@@ -96,7 +102,13 @@ def create_synthetic_data_set(
 def _extract_data_set(
     data_set: object,
 ) -> tuple[FloatArray, FloatArray | None]:
-    """Extract features and optional targets from common data-set formats."""
+    """Extract features and optional targets from common data-set formats.
+
+    Precondition: data_set is a two-dimensional array or a tuple/dictionary
+    containing finite feature data, and optionally targets.
+    Postcondition: returns finite feature rows and matching optional targets.
+    Effect: no input data or external state is mutated.
+    """
     if isinstance(data_set, tuple):
         if len(data_set) not in (1, 2):
             raise ValueError(
@@ -177,6 +189,7 @@ def calculate_weights(
     )
     weights = np.zeros(bias_features.shape[1], dtype=np.float64)
     if selected_activation == "step":
+        # Apply the perceptron learning rule: w <- w + eta * (y-yhat) * x.
         for _ in range(max_iterations):
             changed = False
             for row, target in zip(bias_features, targets):
@@ -189,6 +202,7 @@ def calculate_weights(
                 break
         return weights
 
+    # Use the sigmoid gradient for binary cross-entropy under full-batch GD.
     for _ in range(max_iterations):
         weighted_sums = bias_features @ weights
         predictions = 1.0 / (
@@ -250,6 +264,13 @@ def sigmoid(values: FloatArray) -> FloatArray:
 def _forward_components(
     parameters: FloatArray, inputs: FloatArray
 ) -> tuple[FloatArray, FloatArray]:
+    """Create hidden and output network values for the XOR model.
+
+    Precondition: parameters has the expected neural-network size and inputs
+    is a two-dimensional array with INPUT_SIZE columns.
+    Postcondition: returns hidden activations and output predictions.
+    Effect: no parameters or inputs are mutated.
+    """
     parameter_count = (
         INPUT_SIZE * HIDDEN_SIZE
         + HIDDEN_SIZE
