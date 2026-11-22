@@ -25,3 +25,26 @@ def test_payroll_record_is_consistent_across_calculation():
     assert record["employee_id"] == "EMP-42"
     assert record["taxable_income"] == record["gross_pay"] + record["bonus"]
     assert record["net_pay"] == record["taxable_income"] - record["taxes"]
+
+
+def test_synthetic_classifier_pipeline_runs_both_activations():
+    data_set = neural_network.create_synthetic_data_set(
+        sample_count=400,
+        seed=23,
+    )
+
+    for activation in ("sigmoid", "step"):
+        weights = neural_network.calculate_weights(
+            data_set,
+            activation=activation,
+            learning_rate=0.1,
+            max_iterations=500,
+        )
+        predictions = neural_network.binary_classifier(
+            data_set,
+            weights,
+            activation=activation,
+        )
+
+        assert weights.shape == (3,)
+        assert predictions.shape == (400,)

@@ -143,6 +143,10 @@ classDiagram
     class NeuralNetwork {
         +float[] XOR_INPUTS
         +float[] XOR_TARGETS
+        +single_neuron(inputs, weights, activation)
+        +create_synthetic_data_set(sample_count, seed)
+        +calculate_weights(data_set, activation)
+        +binary_classifier(data_set, weights, activation)
         +sigmoid(values)
         +forward(parameters, inputs)
         +mean_squared_error(parameters, inputs, targets)
@@ -208,7 +212,9 @@ python -m pytest module9/tests
 
 The tests cover neural-network sigmoid behavior, backpropagation gradients,
 repeatable training, XOR prediction integration, payroll validation, overtime,
-bonuses, taxes, rounding, and payroll record invariants.
+bonuses, taxes, rounding, and payroll record invariants. Additional unit and
+integration tests run the synthetic single-neuron and binary-classifier
+workflows for both `sigmoid` and `step` activation functions.
 
 GitHub Actions runs the Module 9 workflow with Python 3.12 and 3.13, checks
 PEP 8 style and formatting with Ruff, and executes the tests through

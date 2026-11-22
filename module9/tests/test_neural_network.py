@@ -57,3 +57,52 @@ def test_training_is_repeatable_for_same_seed():
     second = neural_network.train(seed=9, max_iterations=30)
 
     np.testing.assert_allclose(first.x, second.x)
+
+
+@pytest.mark.parametrize(
+    ("activation", "expected"),
+    [("sigmoid", 0.8807970779778823), ("step", 1.0)],
+)
+def test_single_neuron_supports_both_activations(activation, expected):
+    result = neural_network.single_neuron([1.0, 1.0], [1.0, 1.0], activation)
+
+    assert np.isclose(result, expected)
+
+
+def test_single_neuron_rejects_unknown_activation():
+    with pytest.raises(ValueError, match="activation"):
+        neural_network.single_neuron([1.0], [1.0], "unknown")
+
+
+def test_synthetic_data_set_is_reproducible_and_valid():
+    first = neural_network.create_synthetic_data_set()
+    second = neural_network.create_synthetic_data_set()
+
+    assert first[0].shape == (200, 2)
+    assert first[1].shape == (200,)
+    assert np.array_equal(first[0], second[0])
+    assert np.array_equal(first[1], second[1])
+    assert set(first[1]) <= {0.0, 1.0}
+
+
+@pytest.mark.parametrize("activation", ["sigmoid", "step"])
+def test_calculate_weights_and_binary_classifier(activation):
+    features, targets = neural_network.create_synthetic_data_set(
+        sample_count=300,
+        seed=17,
+    )
+    weights = neural_network.calculate_weights(
+        (features, targets),
+        activation=activation,
+        learning_rate=0.1,
+        max_iterations=500,
+    )
+    predictions = neural_network.binary_classifier(
+        features,
+        weights,
+        activation=activation,
+    )
+
+    assert weights.shape == (3,)
+    assert predictions.shape == (300,)
+    assert np.mean(predictions == targets) >= 0.95
