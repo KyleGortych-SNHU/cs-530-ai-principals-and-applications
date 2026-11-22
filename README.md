@@ -127,3 +127,93 @@ Actions runs this same test command on pushes to `main` and on manual dispatch.
   <img src="module5/assets/Screenshot_20261025_161905.png" width="90%" alt="Terminal showing all 17 Module 5 tests passing">
   <p>Updated test run</p>
 </div>
+
+</details>
+
+### Module 9
+
+<details>
+<summary>Click to see Module 9 work</summary>
+
+<details>
+<summary>UML Class Diagram</summary>
+
+```mermaid
+classDiagram
+    class NeuralNetwork {
+        +float[] XOR_INPUTS
+        +float[] XOR_TARGETS
+        +sigmoid(values)
+        +forward(parameters, inputs)
+        +mean_squared_error(parameters, inputs, targets)
+        +gradient(parameters, inputs, targets)
+        +train(inputs, targets, seed, max_iterations) OptimizeResult
+    }
+    class PayrollRecord {
+        <<TypedDict>>
+        +str employee_id
+        +str employee_name
+        +float regular_pay
+        +float overtime_pay
+        +float gross_pay
+        +float bonus
+        +float taxable_income
+        +float taxes
+        +float net_pay
+        +str department
+        +str department_code
+        +str status
+    }
+    class Payroll {
+        +dict DEPARTMENT_CODES
+        +dict DEPARTMENT_BONUS_RATES
+        +float TAX_RATE
+        +validate_payroll_inputs(employee_id, hours_worked, pay_rate, department)
+        +calculate_payroll(employee_id, hours_worked, pay_rate, department) PayrollRecord
+    }
+    Payroll ..> PayrollRecord : creates
+```
+
+</details>
+
+<details>
+<summary>Source Code</summary>
+
+- [Neural network implementation](module9/neural_network.py)
+- [Payroll implementation](module9/payroll.py)
+- [Python dependencies](module9/requirements.txt)
+
+Run the neural-network example from the repository root:
+
+```bash
+python module9/neural_network.py
+```
+
+Run the payroll example from the repository root:
+
+```bash
+python module9/payroll.py
+```
+
+</details>
+
+<details>
+<summary>Testing and CI</summary>
+
+Run the unit and integration tests from the repository root:
+
+```bash
+python -m pytest module9/tests
+```
+
+The tests cover neural-network sigmoid behavior, backpropagation gradients,
+repeatable training, XOR prediction integration, payroll validation, overtime,
+bonuses, taxes, rounding, and payroll record invariants.
+
+GitHub Actions runs the Module 9 workflow with Python 3.12 and 3.13, checks
+PEP 8 style and formatting with Ruff, and executes the tests through
+[main.yml](.github/workflows/main.yml).
+
+</details>
+
+</details>

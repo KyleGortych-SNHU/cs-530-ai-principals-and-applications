@@ -10,3 +10,6 @@ jobs:
   module5:
     name: Module 5
     uses: ./.github/workflows/module5.yml
+  module9:
+    name: Module 9
+    uses: ./.github/workflows/module9.yml
