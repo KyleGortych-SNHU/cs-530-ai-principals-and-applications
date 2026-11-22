@@ -219,6 +219,8 @@ classification tests calculate one set of weights with the sigmoid gradient
 and one set with the perceptron learning rule for the step activation, then
 run the binary classifier twice and verify that both prediction paths return
 binary values and achieve at least 95 percent accuracy on the synthetic data.
+A unit test also verifies that `binary_classifier` calls `single_neuron` once
+for every data-set row.
 
 GitHub Actions runs the Module 9 workflow with Python 3.12 and 3.13, checks
 PEP 8 style and formatting with Ruff, and executes the tests through

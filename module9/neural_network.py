@@ -236,17 +236,21 @@ def binary_classifier(
     if not np.isfinite(weight_array).all():
         raise ValueError("weights must contain only finite numbers")
 
-    if weight_array.size == features.shape[1]:
-        weighted_sums = features @ weight_array
-    else:
-        weighted_sums = weight_array[0] + features @ weight_array[1:]
-
-    if selected_activation == "sigmoid":
-        probabilities = 1.0 / (
-            1.0 + np.exp(-np.clip(weighted_sums, -500.0, 500.0))
+    if weight_array.size == features.shape[1] + 1:
+        neuron_inputs = np.column_stack(
+            [np.ones(features.shape[0], dtype=np.float64), features]
         )
-        return (probabilities >= 0.5).astype(np.float64)
-    return (weighted_sums >= 0.0).astype(np.float64)
+    else:
+        neuron_inputs = features
+
+    outputs = np.array(
+        [
+            single_neuron(row, weight_array, selected_activation)
+            for row in neuron_inputs
+        ],
+        dtype=np.float64,
+    )
+    return (outputs >= 0.5).astype(np.float64)
 
 
 def sigmoid(values: FloatArray) -> FloatArray:

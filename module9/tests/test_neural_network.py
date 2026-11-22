@@ -1,5 +1,7 @@
 """Unit tests for the Module 9 neural network."""
 
+from unittest.mock import patch
+
 import numpy as np
 import pytest
 
@@ -142,3 +144,30 @@ def test_calculate_weights_and_binary_classifier(activation):
     assert predictions.shape == (300,)
     assert set(predictions) <= {0.0, 1.0}
     assert np.mean(predictions == targets) >= 0.95
+
+
+def test_binary_classifier_calls_single_neuron_for_each_row():
+    """Specification: classifier delegates each row to the single-neuron API.
+
+    Precondition: each dataset row is a valid feature vector and weights
+    contain one bias and one weight per feature.
+    Postcondition: single_neuron is called once per row and predictions are
+    binary.
+    Effect: only the test's spy observes neuron calls.
+    """
+    features = np.array([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]])
+    weights = np.array([0.0, 1.0, -1.0])
+
+    with patch.object(
+        neural_network,
+        "single_neuron",
+        wraps=neural_network.single_neuron,
+    ) as neuron_spy:
+        predictions = neural_network.binary_classifier(
+            features,
+            weights,
+            activation="step",
+        )
+
+    assert neuron_spy.call_count == len(features)
+    assert set(predictions) <= {0.0, 1.0}
